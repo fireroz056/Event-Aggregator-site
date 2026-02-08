@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dubai & Abu Dhabi Events - Your Ultimate Event Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .event-image {
+            aspect-ratio: 16/9;
+            object-fit: cover;
+        }
+        
+        .category-chip {
+            transition: all 0.2s;
+        }
+        
+        .category-chip:hover {
+            transform: scale(1.05);
+        }
+        
+        .date-selector {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .date-selector::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white sticky top-0 z-50 shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-calendar-star text-3xl"></i>
+                    <div>
+                        <h1 class="text-2xl font-bold">UAE Events</h1>
+                        <p class="text-xs opacity-90">Dubai & Abu Dhabi</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button id="refreshBtn" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- City Selector -->
+    <div class="bg-white shadow-sm border-b sticky top-16 z-40">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex gap-2 overflow-x-auto">
+                <button class="city-btn px-4 py-2 rounded-full font-medium transition whitespace-nowrap bg-purple-600 text-white" data-city="all">
+                    All Cities
+                </button>
+                <button class="city-btn px-4 py-2 rounded-full font-medium transition whitespace-nowrap bg-gray-200 text-gray-700 hover:bg-gray-300" data-city="dubai">
+                    Dubai
+                </button>
+                <button class="city-btn px-4 py-2 rounded-full font-medium transition whitespace-nowrap bg-gray-200 text-gray-700 hover:bg-gray-300" data-city="abudhabi">
+                    Abu Dhabi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Date Selector -->
+    <div class="bg-white shadow-sm border-b">
+        <div class="container mx-auto px-4 py-4">
+            <div id="dateSelector" class="date-selector flex gap-3 overflow-x-auto pb-2">
+                <!-- Dates will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Filters -->
+    <div class="bg-white shadow-sm border-b">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex gap-2 overflow-x-auto pb-2">
+                <button class="category-chip px-4 py-2 rounded-full text-sm font-medium bg-purple-600 text-white whitespace-nowrap" data-category="all">
+                    <i class="fas fa-th mr-1"></i> All Events
+                </button>
+                <button class="category-chip px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-purple-100 whitespace-nowrap" data-category="music">
+                    <i class="fas fa-music mr-1"></i> Music
+                </button>
+                <button class="category-chip px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-purple-100 whitespace-nowrap" data-category="arts">
+                    <i class="fas fa-palette mr-1"></i> Arts & Culture
+                </button>
+                <button class="category-chip px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-purple-100 whitespace-nowrap" data-category="sports">
+                    <i class="fas fa-futbol mr-1"></i> Sports
+                </button>
+                <button class="category-chip px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-purple-100 whitespace-nowrap" data-category="food">
+                    <i class="fas fa-utensils mr-1"></i> Food & Dining
+                </button>
+                <button class="category-chip px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-purple-100 whitespace-nowrap" data-category="family">
+                    <i class="fas fa-users mr-1"></i> Family
+                </button>
+                <button class="category-chip px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-purple-100 whitespace-nowrap" data-category="nightlife">
+                    <i class="fas fa-moon mr-1"></i> Nightlife
+                </button>
+                <button class="category-chip px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-purple-100 whitespace-nowrap" data-category="business">
+                    <i class="fas fa-briefcase mr-1"></i> Business
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- Stats Bar -->
+        <div class="mb-6 bg-white rounded-lg shadow-sm p-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Showing Events</p>
+                    <p class="text-2xl font-bold text-purple-600" id="eventCount">0</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-600">Selected Date</p>
+                    <p class="text-lg font-semibold" id="selectedDateDisplay">Today</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Skeleton -->
+        <div id="loadingSkeleton" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                <div class="skeleton h-48 w-full"></div>
+                <div class="p-4 space-y-3">
+                    <div class="skeleton h-4 w-20 rounded"></div>
+                    <div class="skeleton h-6 w-full rounded"></div>
+                    <div class="skeleton h-4 w-3/4 rounded"></div>
+                    <div class="skeleton h-4 w-1/2 rounded"></div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm hidden md:block">
+                <div class="skeleton h-48 w-full"></div>
+                <div class="p-4 space-y-3">
+                    <div class="skeleton h-4 w-20 rounded"></div>
+                    <div class="skeleton h-6 w-full rounded"></div>
+                    <div class="skeleton h-4 w-3/4 rounded"></div>
+                    <div class="skeleton h-4 w-1/2 rounded"></div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm hidden lg:block">
+                <div class="skeleton h-48 w-full"></div>
+                <div class="p-4 space-y-3">
+                    <div class="skeleton h-4 w-20 rounded"></div>
+                    <div class="skeleton h-6 w-full rounded"></div>
+                    <div class="skeleton h-4 w-3/4 rounded"></div>
+                    <div class="skeleton h-4 w-1/2 rounded"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Events Grid -->
+        <div id="eventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+            <!-- Events will be populated here -->
+        </div>
+
+        <!-- No Events Message -->
+        <div id="noEvents" class="hidden text-center py-16">
+            <i class="fas fa-calendar-times text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">No Events Found</h3>
+            <p class="text-gray-500">Try selecting a different date or category</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white mt-12 py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400">© 2026 UAE Events. Aggregating events from trusted sources across Dubai & Abu Dhabi</p>
+            <p class="text-xs text-gray-500 mt-2">Last updated: <span id="lastUpdate"></span></p>
+        </div>
+    </footer>
+
+    <script>
+        // Event data structure - simulating aggregated data from multiple sources
+        const eventSources = {
+            dubai: [
+                {
+                    id: 1,
+                    title: "Dubai Jazz Festival 2026",
+                    category: "music",
+                    city: "dubai",
+                    venue: "Dubai Media City Amphitheatre",
+                    date: new Date(2026, 1, 8),
+                    endDate: new Date(2026, 1, 10),
+                    image: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&h=450&fit=crop",
+                    description: "Experience world-class jazz performances from international and regional artists in this three-day festival.",
+                    price: "AED 350",
+                    url: "https://dubaicalendar.ae",
+                    source: "Dubai Calendar"
+                },
+                {
+                    id: 2,
+                    title: "Art Dubai Contemporary Fair",
+                    category: "arts",
+                    city: "dubai",
+                    venue: "Dubai International Financial Centre",
+                    date: new Date(2026, 1, 9),
+                    endDate: new Date(2026, 1, 12),
+                    image: "https://images.unsplash.com/photo-1531243269054-5ebf6f34081e?w=800&h=450&fit=crop",
+                    description: "The leading international art fair in the Middle East showcasing contemporary and modern artworks.",
+                    price: "AED 100",
+                    url: "https://artdubai.ae",
+                    source: "Art Dubai"
+                },
+                {
+                    id: 3,
+                    title: "Dubai Marathon 2026",
+                    category: "sports",
+                    city: "dubai",
+                    venue: "Sheikh Mohammed bin Rashid Blvd",
+                    date: new Date(2026, 1, 8),
+                    image: "https://images.unsplash.com/photo-1532444458054-01a7dd3e9fca?w=800&h=450&fit=crop",
+                    description: "Join thousands of runners in one of the world's most prestigious marathons with stunning city views.",
+                    price: "AED 150",
+                    url: "https://dubaimarathon.org",
+                    source: "Dubai Marathon"
+                },
+                {
+                    id: 4,
+                    title: "Street Food Festival",
+                    category: "food",
+                    city: "dubai",
+                    venue: "Al Seef",
+                    date: new Date(2026, 1, 8),
+                    endDate: new Date(2026, 1, 15),
+                    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&h=450&fit=crop",
+                    description: "Taste authentic street food from 30+ countries in this vibrant culinary celebration.",
+                    price: "Free Entry",
+                    url: "https://visitdubai.com",
+                    source: "Visit Dubai"
+                },
+                {
+                    id: 5,
+                    title: "Kids Carnival at La Mer",
+                    category: "family",
+                    city: "dubai",
+                    venue: "La Mer",
+                    date: new Date(2026, 1, 9),
+                    image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&h=450&fit=crop",
+                    description: "Family-friendly entertainment with rides, games, face painting, and live performances.",
+                    price: "AED 50",
+                    url: "https://meraas.com",
+                    source: "Meraas"
+                },
+                {
+                    id: 6,
+                    title: "Rooftop Cinema Under the Stars",
+                    category: "nightlife",
+                    city: "dubai",
+                    venue: "Downtown Dubai",
+                    date: new Date(2026, 1, 10),
+                    image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800&h=450&fit=crop",
+                    description: "Watch classic movies under the night sky with premium seating and gourmet snacks.",
+                    price: "AED 120",
+                    url: "https://platinumlist.net",
+                    source: "Platinum List"
+                },
+                {
+                    id: 7,
+                    title: "Tech Innovation Summit",
+                    category: "business",
+                    city: "dubai",
+                    venue: "Dubai World Trade Centre",
+                    date: new Date(2026, 1, 11),
+                    endDate: new Date(2026, 1, 12),
+                    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=450&fit=crop",
+                    description: "Leading technology summit featuring AI, blockchain, and startup innovations.",
+                    price: "AED 500",
+                    url: "https://dwtc.com",
+                    source: "DWTC"
+                },
+                {
+                    id: 8,
+                    title: "Electronic Music Night",
+                    category: "nightlife",
+                    city: "dubai",
+                    venue: "BASE Dubai",
+                    date: new Date(2026, 1, 8),
+                    image: "https://images.unsplash.com/photo-1571266028243-d220c6e1e9d8?w=800&h=450&fit=crop",
+                    description: "Dance the night away with world-renowned DJs spinning the latest electronic beats.",
+                    price: "AED 200",
+                    url: "https://basedubai.com",
+                    source: "BASE Dubai"
+                }
+            ],
+            abudhabi: [
+                {
+                    id: 9,
+                    title: "Abu Dhabi Grand Prix",
+                    category: "sports",
+                    city: "abudhabi",
+                    venue: "Yas Marina Circuit",
+                    date: new Date(2026, 1, 9),
+                    endDate: new Date(2026, 1, 11),
+                    image: "https://images.unsplash.com/photo-1514843319620-4f042827c481?w=800&h=450&fit=crop",
+                    description: "The ultimate Formula 1 racing experience with concerts and entertainment.",
+                    price: "AED 750",
+                    url: "https://yasmarinacircuit.com",
+                    source: "Yas Marina"
+                },
+                {
+                    id: 10,
+                    title: "Louvre Abu Dhabi Exhibition",
+                    category: "arts",
+                    city: "abudhabi",
+                    venue: "Louvre Abu Dhabi",
+                    date: new Date(2026, 1, 8),
+                    endDate: new Date(2026, 2, 30),
+                    image: "https://images.unsplash.com/photo-1580141992142-0e2ccbceb4b8?w=800&h=450&fit=crop",
+                    description: "Special exhibition featuring Renaissance masterpieces on loan from European museums.",
+                    price: "AED 63",
+                    url: "https://louvreabudhabi.ae",
+                    source: "Louvre Abu Dhabi"
+                },
+                {
+                    id: 11,
+                    title: "Abu Dhabi Food Festival",
+                    category: "food",
+                    city: "abudhabi",
+                    venue: "Corniche Beach",
+                    date: new Date(2026, 1, 10),
+                    endDate: new Date(2026, 1, 17),
+                    image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=450&fit=crop",
+                    description: "Celebrate Emirati and international cuisine with celebrity chef demonstrations.",
+                    price: "Free Entry",
+                    url: "https://visitabudhabi.ae",
+                    source: "Visit Abu Dhabi"
+                },
+                {
+                    id: 12,
+                    title: "Family Fun Day at Yas Waterworld",
+                    category: "family",
+                    city: "abudhabi",
+                    venue: "Yas Waterworld",
+                    date: new Date(2026, 1, 8),
+                    image: "https://images.unsplash.com/photo-1561679337-1842e9044fd4?w=800&h=450&fit=crop",
+                    description: "Special family package with water slides, wave pools, and kids entertainment zones.",
+                    price: "AED 250",
+                    url: "https://yaswaterworld.com",
+                    source: "Yas Waterworld"
+                },
+                {
+                    id: 13,
+                    title: "Classical Orchestra Performance",
+                    category: "music",
+                    city: "abudhabi",
+                    venue: "Emirates Palace Auditorium",
+                    date: new Date(2026, 1, 11),
+                    image: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=800&h=450&fit=crop",
+                    description: "World-class philharmonic orchestra performing Beethoven and Mozart classics.",
+                    price: "AED 300",
+                    url: "https://emiratespalace.ae",
+                    source: "Emirates Palace"
+                },
+                {
+                    id: 14,
+                    title: "Startup Pitch Competition",
+                    category: "business",
+                    city: "abudhabi",
+                    venue: "Hub71",
+                    date: new Date(2026, 1, 12),
+                    image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&h=450&fit=crop",
+                    description: "Innovative startups compete for funding in front of leading venture capitalists.",
+                    price: "Free",
+                    url: "https://hub71.com",
+                    source: "Hub71"
+                }
+            ]
+        };
+
+        // State management
+        let currentDate = new Date(2026, 1, 8);
+        let selectedCategory = 'all';
+        let selectedCity = 'all';
+        let allEvents = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDates();
+            loadEvents();
+            setupEventListeners();
+            updateLastUpdate();
+        });
+
+        function initializeDates() {
+            const dateSelector = document.getElementById('dateSelector');
+            const today = new Date(2026, 1, 8);
+            
+            for (let i = 0; i < 14; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+                
+                const dateBtn = document.createElement('button');
+                dateBtn.className = `date-btn flex-shrink-0 px-4 py-3 rounded-lg transition ${i === 0 ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`;
+                dateBtn.setAttribute('data-date', date.toISOString());
+                
+                const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+                const dayNum = date.getDate();
+                const month = date.toLocaleDateString('en-US', { month: 'short' });
+                
+                dateBtn.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-xs font-medium opacity-80">${dayName}</div>
+                        <div class="text-2xl font-bold">${dayNum}</div>
+                        <div class="text-xs opacity-80">${month}</div>
+                    </div>
+                `;
+                
+                dateBtn.addEventListener('click', () => selectDate(date, dateBtn));
+                dateSelector.appendChild(dateBtn);
+            }
+        }
+
+        function selectDate(date, btn) {
+            currentDate = date;
+            
+            // Update button styles
+            document.querySelectorAll('.date-btn').forEach(b => {
+                b.className = 'date-btn flex-shrink-0 px-4 py-3 rounded-lg transition bg-gray-100 text-gray-700 hover:bg-gray-200';
+            });
+            btn.className = 'date-btn flex-shrink-0 px-4 py-3 rounded-lg transition bg-purple-600 text-white';
+            
+            // Update display
+            const dateDisplay = date.toLocaleDateString('en-US', { 
+                month: 'long', 
+                day: 'numeric',
+                year: 'numeric'
+            });
+            document.getElementById('selectedDateDisplay').textContent = dateDisplay;
+            
+            filterAndDisplayEvents();
+        }
+
+        function setupEventListeners() {
+            // Category filters
+            document.querySelectorAll('.category-chip').forEach(chip => {
+                chip.addEventListener('click', function() {
+                    selectedCategory = this.getAttribute('data-category');
+                    
+                    document.querySelectorAll('.category-chip').forEach(c => {
+                        c.className = 'category-chip px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-purple-100 whitespace-nowrap';
+                    });
+                    this.className = 'category-chip px-4 py-2 rounded-full text-sm font-medium bg-purple-600 text-white whitespace-nowrap';
+                    
+                    filterAndDisplayEvents();
+                });
+            });
+
+            // City filters
+            document.querySelectorAll('.city-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    selectedCity = this.getAttribute('data-city');
+                    
+                    document.querySelectorAll('.city-btn').forEach(b => {
+                        b.className = 'city-btn px-4 py-2 rounded-full font-medium transition whitespace-nowrap bg-gray-200 text-gray-700 hover:bg-gray-300';
+                    });
+                    this.className = 'city-btn px-4 py-2 rounded-full font-medium transition whitespace-nowrap bg-purple-600 text-white';
+                    
+                    filterAndDisplayEvents();
+                });
+            });
+
+            // Refresh button
+            document.getElementById('refreshBtn').addEventListener('click', function() {
+                this.classList.add('animate-spin');
+                setTimeout(() => {
+                    this.classList.remove('animate-spin');
+                    loadEvents();
+                }, 1000);
+            });
+        }
+
+        function loadEvents() {
+            // Combine all events
+            allEvents = [...eventSources.dubai, ...eventSources.abudhabi];
+            filterAndDisplayEvents();
+        }
+
+        function filterAndDisplayEvents() {
+            const loadingSkeleton = document.getElementById('loadingSkeleton');
+            const eventsGrid = document.getElementById('eventsGrid');
+            const noEvents = document.getElementById('noEvents');
+            
+            // Show loading
+            loadingSkeleton.classList.remove('hidden');
+            eventsGrid.classList.add('hidden');
+            noEvents.classList.add('hidden');
+            
+            setTimeout(() => {
+                let filtered = allEvents.filter(event => {
+                    // Date filter
+                    const eventStart = new Date(event.date);
+                    const eventEnd = event.endDate ? new Date(event.endDate) : eventStart;
+                    const matchesDate = currentDate >= eventStart && currentDate <= eventEnd;
+                    
+                    // Category filter
+                    const matchesCategory = selectedCategory === 'all' || event.category === selectedCategory;
+                    
+                    // City filter
+                    const matchesCity = selectedCity === 'all' || event.city === selectedCity;
+                    
+                    return matchesDate && matchesCategory && matchesCity;
+                });
+                
+                displayEvents(filtered);
+            }, 500);
+        }
+
+        function displayEvents(events) {
+            const eventsGrid = document.getElementById('eventsGrid');
+            const loadingSkeleton = document.getElementById('loadingSkeleton');
+            const noEvents = document.getElementById('noEvents');
+            const eventCount = document.getElementById('eventCount');
+            
+            loadingSkeleton.classList.add('hidden');
+            
+            if (events.length === 0) {
+                eventsGrid.classList.add('hidden');
+                noEvents.classList.remove('hidden');
+                eventCount.textContent = '0';
+                return;
+            }
+            
+            noEvents.classList.add('hidden');
+            eventsGrid.classList.remove('hidden');
+            eventCount.textContent = events.length;
+            
+            eventsGrid.innerHTML = events.map(event => `
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover fade-in cursor-pointer" onclick="window.open('${event.url}', '_blank')">
+                    <div class="relative">
+                        <img src="${event.image}" alt="${event.title}" class="event-image w-full">
+                        <div class="absolute top-3 right-3">
+                            <span class="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-purple-600">
+                                ${getCategoryIcon(event.category)} ${getCategoryName(event.category)}
+                            </span>
+                        </div>
+                        ${event.price ? `
+                            <div class="absolute bottom-3 left-3">
+                                <span class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                                    ${event.price}
+                                </span>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center gap-2 mb-2 text-sm text-gray-600">
+                            <i class="fas fa-map-marker-alt text-purple-600"></i>
+                            <span>${event.venue}</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">${event.title}</h3>
+                        <p class="text-sm text-gray-600 mb-4 line-clamp-2">${event.description}</p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span><i class="fas fa-calendar mr-1"></i> ${formatEventDate(event)}</span>
+                            <span class="text-purple-600 font-medium">${event.source}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getCategoryIcon(category) {
+            const icons = {
+                music: '<i class="fas fa-music"></i>',
+                arts: '<i class="fas fa-palette"></i>',
+                sports: '<i class="fas fa-futbol"></i>',
+                food: '<i class="fas fa-utensils"></i>',
+                family: '<i class="fas fa-users"></i>',
+                nightlife: '<i class="fas fa-moon"></i>',
+                business: '<i class="fas fa-briefcase"></i>'
+            };
+            return icons[category] || '<i class="fas fa-star"></i>';
+        }
+
+        function getCategoryName(category) {
+            const names = {
+                music: 'Music',
+                arts: 'Arts',
+                sports: 'Sports',
+                food: 'Food',
+                family: 'Family',
+                nightlife: 'Nightlife',
+                business: 'Business'
+            };
+            return names[category] || 'Event';
+        }
+
+        function formatEventDate(event) {
+            const start = new Date(event.date);
+            if (event.endDate) {
+                const end = new Date(event.endDate);
+                return `${start.getDate()} - ${end.getDate()} ${end.toLocaleDateString('en-US', { month: 'short' })}`;
+            }
+            return start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        function updateLastUpdate() {
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent = now.toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+    </script>
+</body>
+</html>
